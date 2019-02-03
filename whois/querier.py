@@ -91,7 +91,6 @@ class Querier:
                 )
 
         if parsed_whois['creation_date'] is None and parsed_whois['updated_date'] is None:
-            print(domain_parts['suffix'])
             if domain_parts['suffix'] not in _config.no_dates_tlds:
                 raise ParsingError(
                     raw_whois=raw_whois,
