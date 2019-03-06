@@ -1,6 +1,5 @@
 import os
 import lxml.html
-import datetime
 import re
 import requests
 import tempfile
@@ -22,7 +21,7 @@ class Registrars:
         cls.check_and_update_registrars()
 
         edited_subject = re.sub(
-            pattern='[^\d\w]',
+            pattern=r'[^\d\w]',
             repl='',
             string=subject,
         )
@@ -46,28 +45,13 @@ class Registrars:
         return most_close_registrar
 
     @classmethod
-    def should_update_registrars_file(
-        cls,
-    ):
-        if not os.path.exists(cls.registrars_file_path):
-            return True
-
-        date_modified = datetime.datetime.fromtimestamp(os.path.getmtime(cls.registrars_file_path))
-        if (datetime.datetime.now() - date_modified).days > 7:
-            return True
-
-        return False
-
-    @classmethod
     def check_and_update_registrars(
         cls,
     ):
-        update_registrars_files = cls.should_update_registrars_file()
+        if not os.path.exists(cls.registrars_file_path):
+            cls.download_registrars_file()
 
-        if update_registrars_files:
-            cls.update_registrars_file()
-
-        if not getattr(cls, 'registrars') or update_registrars_files:
+        if not cls.registrars:
             cls.update_registrars()
 
     @classmethod
@@ -83,7 +67,7 @@ class Registrars:
                 {
                     'original': original_name.strip(),
                     'edited': re.sub(
-                        pattern='[^\d\w]',
+                        pattern=r'[^\d\w]',
                         repl='',
                         string=original_name,
                     ).lower(),
@@ -94,7 +78,7 @@ class Registrars:
         ]
 
     @classmethod
-    def update_registrars_file(
+    def download_registrars_file(
         cls,
     ):
         response = requests.get(

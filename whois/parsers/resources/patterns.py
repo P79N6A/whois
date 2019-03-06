@@ -166,6 +166,18 @@ domain_not_exist_patterns = [
         pattern=r'.*?Temporary failure in name resolution*?',
         flags=re.IGNORECASE | re.MULTILINE,
     ),
+    re.compile(
+        pattern=r'.*?domain name not known in .* Domain Registry*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
+    re.compile(
+        pattern=r'.*?after release from the queue, available for registration.*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
+    re.compile(
+        pattern=r'.*?No information was found matching that query..*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
 ]
 
 blocked_whois_request_patterns = [
@@ -258,7 +270,7 @@ blocked_whois_request_patterns = [
         flags=re.IGNORECASE | re.MULTILINE,
     ),
     re.compile(
-        pattern=r'.*?441 Request Blocked*?',
+        pattern=r'.*?441 Request Blocked.*?',
         flags=re.IGNORECASE | re.MULTILINE,
     ),
     re.compile(
@@ -274,19 +286,19 @@ blocked_whois_request_patterns = [
         flags=re.IGNORECASE | re.MULTILINE,
     ),
     re.compile(
-        pattern=r'.*?Quota exceeded*?',
+        pattern=r'.*?Quota exceeded.*?',
         flags=re.IGNORECASE | re.MULTILINE,
     ),
     re.compile(
-        pattern=r'.*?Query limit exceeded*?',
+        pattern=r'.*?Query limit exceeded.*?',
         flags=re.IGNORECASE | re.MULTILINE,
     ),
     re.compile(
-        pattern=r'.*?Service is not available*?',
+        pattern=r'.*?Service is not available.*?',
         flags=re.IGNORECASE | re.MULTILINE,
     ),
     re.compile(
-        pattern=r'.*?Daily whois request limit*?',
+        pattern=r'.*?Daily whois request limit.*?',
         flags=re.IGNORECASE | re.MULTILINE,
     ),
     re.compile(
@@ -298,7 +310,27 @@ blocked_whois_request_patterns = [
         flags=re.IGNORECASE | re.MULTILINE,
     ),
     re.compile(
-        pattern=r'.*?maximum number of requests per second exceeded*?',
+        pattern=r'.*?maximum number of requests per second exceeded.*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
+    re.compile(
+        pattern=r'.*?can temporarily not be answered.*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
+    re.compile(
+        pattern=r'.*?WHOIS query rejected for the Dot .* Domain Registry.*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
+    re.compile(
+        pattern=r'.*?Too many connection attempts.*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
+    re.compile(
+        pattern=r'.*?Simultaneous Requests. Please wait for the end.*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
+    re.compile(
+        pattern=r'.*?request limit exceeded.*?',
         flags=re.IGNORECASE | re.MULTILINE,
     ),
 ]
@@ -306,6 +338,10 @@ blocked_whois_request_patterns = [
 has_no_whois_server_patterns = [
     re.compile(
         pattern=r'.*?no whois server.*?',
+        flags=re.IGNORECASE | re.MULTILINE,
+    ),
+    re.compile(
+        pattern=r'.*?connect: Connection refused.*?',
         flags=re.IGNORECASE | re.MULTILINE,
     ),
 ]

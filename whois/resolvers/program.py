@@ -1,9 +1,7 @@
 import subprocess
 import shlex
 import os
-import platform
 import re
-import stat
 import select
 import time
 
@@ -19,41 +17,17 @@ class Resolver(
     def get_raw_whois(
         cls,
         domain,
+        whois_binary_path='whois',
     ):
-        current_os = platform.system()
-        current_architecture = platform.architecture()
-        current_architecture_bits = current_architecture[0]
-        if current_os == 'Linux':
-            if current_architecture_bits == '64bit':
-                program = os.path.abspath(
-                    path=os.path.join(
-                        os.path.dirname(__file__),
-                        '../bin/whois_elf64',
-                    )
-                )
-            else:
-                program = os.path.abspath(
-                    path=os.path.join(
-                        os.path.dirname(__file__),
-                        '../bin/whois_elf32',
-                    )
-                )
-
-            if not os.access(program, os.X_OK):
-                original_permissions = os.stat(program)
-                os.chmod(program, original_permissions.st_mode | stat.S_IXGRP | stat.S_IXUSR | stat.S_IXOTH)
-        elif current_os == 'Windows':
-            program = os.path.abspath(
-                path=os.path.join(
-                    os.path.dirname(__file__),
-                    '../bin/whois.exe',
-                )
+        if whois_binary_path is None:
+            whois_binary_path_result = Resolver.find_executable(
+                executable_name='whois',
             )
-        else:
-            program = 'whois'
+            if whois_binary_path_result:
+                whois_binary_path = whois_binary_path_result
 
         command = '{program} {domain}'.format(
-            program=program,
+            program=whois_binary_path,
             domain=domain,
         )
         is_posix = os.name == 'posix'
@@ -140,7 +114,7 @@ class Resolver(
                     pass
 
         empty_whois_result = all_output.strip() == ''
-        timedout_whois_result = all_output.strip() == 'Interrupted by signal 15...'
+        timedout_whois_result = 'Interrupted by signal 15...' in all_output
 
         if empty_whois_result or timedout_whois_result:
             raise _resolver.WhoisTimedOut()
@@ -153,13 +127,13 @@ class Resolver(
         raw_whois,
     ):
         raw_whois = re.sub(
-            pattern='.*Mark Russinovich',
+            pattern=r'.*Mark Russinovich',
             repl='',
             string=raw_whois,
             flags=re.DOTALL,
         )
         raw_whois = re.sub(
-            pattern='^Connecting to.*\.\.\.$',
+            pattern=r'^Connecting to.*\.\.\.$',
             repl='',
             string=raw_whois,
             flags=re.MULTILINE,
@@ -179,3 +153,17 @@ class Resolver(
         normalized_whois = normalized_whois.strip()
 
         return normalized_whois
+
+    @staticmethod
+    def find_executable(
+        executable_name,
+    ):
+        paths = os.environ['PATH'].split(os.pathsep)
+        for path in paths:
+            executable_path = os.path.join(path, executable_name)
+            if os.path.isfile(
+                path=executable_path,
+            ):
+                return executable_path
+
+        return None
